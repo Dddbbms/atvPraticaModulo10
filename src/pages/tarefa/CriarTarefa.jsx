@@ -8,6 +8,8 @@ import CardHeader from '@mui/material/CardHeader';
 import CardContent from '@mui/material/CardContent';
 import CardActions from '@mui/material/CardActions';
 import Button from '@mui/material/Button';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
 
 //Declaração do componente CriarTarefa, recebendo como props, do Componente ListarTarefa, os states handClose, tarefas e setTarefas
 const CriarTarefa = ({handleClose, tarefas, setTarefas}) =>{
@@ -18,6 +20,9 @@ const CriarTarefa = ({handleClose, tarefas, setTarefas}) =>{
   const [fimTarefa, setFimTarefa] = useState('');
   const [recursoTarefa, setRecursoTarefa] = useState('');
   const [statusTarefa, setStatusTarefa] = useState('');
+
+  const [toastText, setToastText] = useState("")
+  const [toastState, setToastState] = useState(false)
   
   useEffect(() => {
     //Abaixo uma variável é declarada para armazenar o id da tarefa, somando 1 ao maior id existente atualmente no state Tarefas
@@ -34,6 +39,16 @@ const CriarTarefa = ({handleClose, tarefas, setTarefas}) =>{
   };
 
   const handleSalvar = () => {
+    if (tituloTarefa.trim() == "") {
+      setToastText("Erro ao salvar. Favor preencher o campo título!")
+      setToastState(true)
+      return
+    } else if (descricaoTarefa.trim() == "") {
+      setToastText("Erro ao salvar. Favor preencher o campo descrição!")
+      setToastState(true)
+      return
+    }
+
     //Para inspecionarmos nosso código, uma boa estratégia é utilizarmos o console.log.
     //  Com o console.log, podemos visualizar o seu conteúdo na aba Console, no inspecionador de elementos, na janela do navegador
     console.log(`id: ${idTarefa} \n titulo: ${tituloTarefa} \n descrição: ${descricaoTarefa} \n inicio: ${inicioTarefa} \n fim: ${fimTarefa} \n recurso: ${recursoTarefa} \n status: ${statusTarefa}`);
@@ -54,55 +69,99 @@ const CriarTarefa = ({handleClose, tarefas, setTarefas}) =>{
     handleClose();
   };
 
-  return(
+  return (
     <Grid container spacing={2}>
+      <Snackbar
+        open={toastState}
+        autoHideDuration={5000}
+        onClose={() => setToastState(false)}
+      >
+        <Alert severity="error" onClose={() => setToastState(false)}>
+          {toastText}
+        </Alert>
+      </Snackbar>
       <Card sx={style}>
-        <CardHeader
-          title="Tarefas"
-          subheader="Cadastro de Tarefas"
-        /> 
-        <CardContent sx={{
-          width: '95%',
-          maxWidth: '100%',
-        }}>
+        <CardHeader title="Tarefas" subheader="Cadastro de Tarefas" />
+        <CardContent
+          sx={{
+            width: "95%",
+            maxWidth: "100%",
+          }}
+        >
           <Grid item xs={12}>
             <FormControl fullWidth>
-              <Input id="tarefa_titulo" aria-describedby="tarefa_titulo_helper_text" value={tituloTarefa} onChange={e => { setTituloTarefa(e.target.value) }} />
-              <FormHelperText id="tarefa_titulo_helper_text">Título da Tarefa.</FormHelperText>
+              <Input
+                id="tarefa_titulo"
+                aria-describedby="tarefa_titulo_helper_text"
+                value={tituloTarefa}
+                onChange={(e) => {
+                  setTituloTarefa(e.target.value);
+                }}
+              />
+              <FormHelperText id="tarefa_titulo_helper_text">
+                Título da Tarefa.
+              </FormHelperText>
             </FormControl>
           </Grid>
-          <Grid item xs={12}>  
+          <Grid item xs={12}>
             <FormControl fullWidth>
-              <Input id="tarefa_descricao" aria-describedby="tarefa_descricao_helper_text" value={descricaoTarefa} onChange={e => { setDescricaoTarefa(e.target.value) }} />
-              <FormHelperText id="tarefa_descricao_helper_text">Descrição da Tarefa.</FormHelperText>
+              <Input
+                id="tarefa_descricao"
+                aria-describedby="tarefa_descricao_helper_text"
+                value={descricaoTarefa}
+                onChange={(e) => {
+                  setDescricaoTarefa(e.target.value);
+                }}
+              />
+              <FormHelperText id="tarefa_descricao_helper_text">
+                Descrição da Tarefa.
+              </FormHelperText>
             </FormControl>
           </Grid>
           <Grid container spacing={2} mt={1}>
-            <Grid item xs={3}>  
+            <Grid item xs={3}>
               <FormControl>
-                <Input id="tarefa_inicio" type="date" aria-describedby="tarefa_inicio_helper_text" value={inicioTarefa} onChange={e => { setInicioTarefa(e.target.value) }}
+                <Input
+                  id="tarefa_inicio"
+                  type="date"
+                  aria-describedby="tarefa_inicio_helper_text"
+                  value={inicioTarefa}
+                  onChange={(e) => {
+                    setInicioTarefa(e.target.value);
+                  }}
                   sx={{
-                    color:'rgba(0, 0, 0, 0.6)',
+                    color: "rgba(0, 0, 0, 0.6)",
                     fontWeight: 400,
-                    paddingLeft:'13px'
-                  }} 
+                    paddingLeft: "13px",
+                  }}
                 />
-                <FormHelperText id="tarefa_inicio_helper_text">Início da Tarefa.</FormHelperText>
-              </FormControl>
-            </Grid>  
-            <Grid item xs={3}>  
-              <FormControl>
-                <Input id="tarefa_fim" type="date" aria-describedby="tarefa_fim_helper_text" value={fimTarefa} onChange={e => { setFimTarefa(e.target.value) }}
-                  sx={{
-                    color:'rgba(0, 0, 0, 0.6)',
-                    fontWeight: 400,
-                    paddingLeft:'13px'
-                  }} 
-                />
-                <FormHelperText id="tarefa_fim_helper_text">Fim da Tarefa.</FormHelperText>
+                <FormHelperText id="tarefa_inicio_helper_text">
+                  Início da Tarefa.
+                </FormHelperText>
               </FormControl>
             </Grid>
-            <Grid item xs={3}>  
+            <Grid item xs={3}>
+              <FormControl>
+                <Input
+                  id="tarefa_fim"
+                  type="date"
+                  aria-describedby="tarefa_fim_helper_text"
+                  value={fimTarefa}
+                  onChange={(e) => {
+                    setFimTarefa(e.target.value);
+                  }}
+                  sx={{
+                    color: "rgba(0, 0, 0, 0.6)",
+                    fontWeight: 400,
+                    paddingLeft: "13px",
+                  }}
+                />
+                <FormHelperText id="tarefa_fim_helper_text">
+                  Fim da Tarefa.
+                </FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={3}>
               <FormControl fullWidth>
                 <InputLabel htmlFor="tarefa_recurso">Recurso</InputLabel>
                 <Select
@@ -112,17 +171,17 @@ const CriarTarefa = ({handleClose, tarefas, setTarefas}) =>{
                   onChange={handleRecurso}
                   size="small"
                   sx={{
-                    color:'rgba(0, 0, 0, 0.6)',
+                    color: "rgba(0, 0, 0, 0.6)",
                     fontWeight: 400,
-                  }} 
+                  }}
                 >
-                  <MenuItem value={'Recurso 1'}>Recurso 1</MenuItem>
-                  <MenuItem value={'Recurso 2'}>Recurso 2</MenuItem>
-                  <MenuItem value={'Recurso 3'}>Recurso 3</MenuItem>
+                  <MenuItem value={"Recurso 1"}>Recurso 1</MenuItem>
+                  <MenuItem value={"Recurso 2"}>Recurso 2</MenuItem>
+                  <MenuItem value={"Recurso 3"}>Recurso 3</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
-            <Grid item xs={3}>  
+            <Grid item xs={3}>
               <FormControl fullWidth>
                 <InputLabel htmlFor="tarefa_recurso">Status</InputLabel>
                 <Select
@@ -132,24 +191,28 @@ const CriarTarefa = ({handleClose, tarefas, setTarefas}) =>{
                   onChange={handleStatus}
                   size="small"
                   sx={{
-                    color:'rgba(0, 0, 0, 0.6)',
+                    color: "rgba(0, 0, 0, 0.6)",
                     fontWeight: 400,
-                  }} 
+                  }}
                 >
-                  <MenuItem value={'Aguardando'}>Aguardando</MenuItem>
-                  <MenuItem value={'Em Andamento'}>Em Andamento</MenuItem>
-                  <MenuItem value={'Concluída'}>Concluída</MenuItem>
+                  <MenuItem value={"Aguardando"}>Aguardando</MenuItem>
+                  <MenuItem value={"Em Andamento"}>Em Andamento</MenuItem>
+                  <MenuItem value={"Concluída"}>Concluída</MenuItem>
                 </Select>
               </FormControl>
             </Grid>
             <Grid container spacing={2} pl={2} mt={2}>
               <Grid item xs={1}>
-                <Button size="small" variant="contained" onClick={handleSalvar}>Salvar</Button>
-              </Grid>  
-              <Grid item xs={1}>  
-                <Button size="small" variant="outlined" onClick={handleClose}>Cancelar</Button>  
+                <Button size="small" variant="contained" onClick={handleSalvar}>
+                  Salvar
+                </Button>
               </Grid>
-            </Grid>  
+              <Grid item xs={1}>
+                <Button size="small" variant="outlined" onClick={handleClose}>
+                  Cancelar
+                </Button>
+              </Grid>
+            </Grid>
           </Grid>
         </CardContent>
       </Card>
